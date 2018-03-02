@@ -12,10 +12,9 @@ namespace Taschenrechner
 {
     public partial class Form1 : Form
     {
-        //string zahl1Text = string.Empty, zahl2Text = string.Empty;
         string zahl2Text = "";
         double zahl, zahl1, zahl2, resultat;
-        //double potenzwert;
+        string resultatText = "";
         char operation = ' ';
         bool firstChar = true;      // wird bei der Zahleneingabe benötigt, um am Anfang der Zahl besonders zu reagieren.
         bool kommaSperre = false;   // wird benötigt um zu verhindern, dass das Zeichen ',' falsch eingesetzt werden kann.  
@@ -30,7 +29,7 @@ namespace Taschenrechner
         {
             InitializeComponent();
             labelFormel.Text = "";
-            textBoxAnzeige.Text = "0";
+            textBoxAnzeige.Text = "";
             this.KeyPreview = true;
             this.KeyPress += new KeyPressEventHandler(Form1_KeyPress);
         }
@@ -48,13 +47,6 @@ namespace Taschenrechner
             button9.Click += new EventHandler(Button_Click);
             button0.Click += new EventHandler(Button_Click);
             buttonKomma.Click += new EventHandler(Button_Click);
-        }
-
-        private void NormierungEingabe()
-        {
-            firstChar = true;
-            kommaSperre = false;
-            exponentSperre = false;
         }
 
         void Button_Click(object sender, EventArgs e)
@@ -169,7 +161,7 @@ namespace Taschenrechner
                     zahl1_belegt = false;
                     zahl1 = 0;
                 }
-                textBoxAnzeige.Text = "0"; // alternativ: textBoxAnzeige.Text = string.Empty;
+                textBoxAnzeige.Text = ""; // alternativ: textBoxAnzeige.Text = string.Empty;
                 firstChar = false;
                 exponentSperre = false;
                 if (zeichen != '0')
@@ -195,14 +187,10 @@ namespace Taschenrechner
             else { textBoxAnzeige.Text += zeichen; }
         }
 
-        private void buttonAddieren_Click(object sender, EventArgs e)
-        { VerarbeiteEingabe('+'); }
-        private void buttonSubtrahieren_Click(object sender, EventArgs e)
-        { VerarbeiteEingabe('-'); }
-        private void buttonMultiplizieren_Click(object sender, EventArgs e)
-        { VerarbeiteEingabe('*'); }
-        private void buttonTeilen_Click(object sender, EventArgs e)
-        { VerarbeiteEingabe('/'); }
+        private void buttonAddieren_Click(object sender, EventArgs e) { VerarbeiteEingabe('+'); }
+        private void buttonSubtrahieren_Click(object sender, EventArgs e) { VerarbeiteEingabe('-'); }
+        private void buttonMultiplizieren_Click(object sender, EventArgs e) { VerarbeiteEingabe('*'); }
+        private void buttonTeilen_Click(object sender, EventArgs e) { VerarbeiteEingabe('/'); }
 
         private void VerarbeiteEingabe(char rechenArt)
         {
@@ -210,8 +198,8 @@ namespace Taschenrechner
             {
                 folgeAktion = false;
                 operation = rechenArt;
-                labelFormel.Text = textBoxAnzeige.Text + " ";
-                textBoxAnzeige.Text = "0";
+                labelFormel.Text = resultatText + " " + operation + " ";
+                textBoxAnzeige.Text = "";
             }
             else
             {
@@ -228,6 +216,7 @@ namespace Taschenrechner
                             textBoxAnzeigeIstZahl1 = false;
                             Berechnung(false);
                             operation = rechenArt;
+                            labelFormel.Text += operation + " ";
                             NormierungEingabe();
                         } // Fehlermeldung bereits in Umwandlung()!!! Keine weitere Aktion.
                     }
@@ -240,7 +229,7 @@ namespace Taschenrechner
                         operation = rechenArt;
                         zahl1 = zahl;
                         zahl1_belegt = true;
-                        labelFormel.Text = zahl1.ToString("#,##0.######") + " ";
+                        labelFormel.Text = zahl1.ToString("#,##0.######") + " " + operation + " ";
                         NormierungEingabe();
                     }
                 }
@@ -252,6 +241,7 @@ namespace Taschenrechner
 
         private void Berechnung(bool buttonGleich)
         {
+            if (folgeAktion) { return; }
             if (!zahl2_belegt)
             {
                 if (Umwandlung())
@@ -286,19 +276,19 @@ namespace Taschenrechner
                 }
             }
             else { return; }
-            textBoxAnzeige.Text = resultat.ToString("#,##0.######"); // fügt Format ein. 5 Kommastellen wurden ermöglicht.
             if (buttonGleich)
             {
                 folgeAktion = true; // Weitere Berechnung auf Grundlage des alten Ergebnisses wird ermöglicht.
-                labelFormel.Text += operation + " " + zahl2Text + " = " + textBoxAnzeige.Text;
+                resultatText = resultat.ToString("#,##0.######");
+                labelFormel.Text += zahl2Text + " = " + resultatText;
             }
-            else
-            { labelFormel.Text += operation + " " + zahl2Text + " "; }
+            else { labelFormel.Text += zahl2Text + " "; }
             zahl1 = resultat;
             zahl2_belegt = false;
             textBoxAnzeigeIstZahl = true;
             textBoxAnzeigeIstZahl1 = true;
             NormierungEingabe();
+            textBoxAnzeige.Text = resultat.ToString("#,##0.######");
         }
 
         private void buttonQuadrat_Click(object sender, EventArgs e)
@@ -311,17 +301,14 @@ namespace Taschenrechner
                     resultat = zahl * zahl;
                     if (!zahl1_belegt)
                     { zahl1 = resultat; }
-                    else
-                    { zahl2 = resultat; }
+                    else { zahl2 = resultat; }
                 }
                 else { return; }
             }
             else
             {
-                if (textBoxAnzeigeIstZahl1)
-                { zahl1 = zahl1 * zahl1; resultat = zahl1; }
-                else
-                { zahl2 = zahl2 * zahl2; resultat = zahl2; }
+                if (textBoxAnzeigeIstZahl1) { zahl1 = zahl1 * zahl1; resultat = zahl1; }
+                else { zahl2 = zahl2 * zahl2; resultat = zahl2; }
             }
             textBoxAnzeige.Text = resultat.ToString("#,##0.###############"); // 15 Kommastellen möglich
         }
@@ -341,31 +328,29 @@ namespace Taschenrechner
             }
             else
             {
-                if (textBoxAnzeigeIstZahl1)
-                { zahl1 = Math.Sqrt(zahl1); resultat = zahl1; }
-                else
-                { zahl2 = Math.Sqrt(zahl2); resultat = zahl2; }
+                if (textBoxAnzeigeIstZahl1) { zahl1 = Math.Sqrt(zahl1); resultat = zahl1; }
+                else { zahl2 = Math.Sqrt(zahl2); resultat = zahl2; }
             }
             textBoxAnzeige.Text = resultat.ToString("#,##0.###############"); // 15 Kommastellen möglich
         }
 
         private void buttonPlusMinus_Click(object sender, EventArgs e)
         {
-            if (!textBoxAnzeigeIstZahl)
+            if (textBoxAnzeigeIstZahl)
             {
-                if (Umwandlung()) { resultat = zahl * -1; }
-                else { return; }
+                if (zahl2_belegt) { zahl2 = zahl2 * -1; resultat = zahl2; }
+                else { zahl1 = zahl1 * -1; resultat = zahl1; }
             }
             else
             {
-                if (textBoxAnzeigeIstZahl1) { zahl1 = zahl1 * -1; resultat = zahl1; }
-                else { zahl2 = zahl2 * -1; resultat = zahl2; }
+                if (Umwandlung()) { resultat = zahl * -1; }
             }
             textBoxAnzeige.Text = resultat.ToString("#,##0.###############"); // 15 Kommastellen möglich
         }
 
         private void buttonProzent_Click(object sender, EventArgs e)
         {
+            if (folgeAktion || zahl2_belegt) { operation = ' '; }
             if ((Double.TryParse(textBoxAnzeige.Text, out zahl2)))
             {
                 resultat = 0;
@@ -385,12 +370,13 @@ namespace Taschenrechner
                         break;
                     default:
                         MessageBox.Show("Folgende Vorgehensweise ist bei der Prozentrechnung zu beachten" +
-                                        "\n1. C eingeben" +
-                                        "\n2. eine Zahl angeben" +
-                                        "\n3. eine Rechenart eingeben" +
-                                        "\n4. eine zweite Zahl angeben" +
-                                        "\n5. [%] betätigen" +
-                                        "\n6. C eingeben");
+                                        "\n1. Man kann sicherheitshalber vorher [C] betätigen" +
+                                        "\n2. eine Zahl eingeben" +
+                                        "\n3. eine der 3 Rechenarten [+], [-] oder [*] eingeben" +
+                                        "\n4. eine zweite Zahl eingeben" +
+                                        "\n5. [%] betätigen");
+                        NormierungEingabe();
+                        NormiereBerechnung();
                         break;
                 }
                 textBoxAnzeige.Text = resultat.ToString();
@@ -405,7 +391,7 @@ namespace Taschenrechner
             else
             {
                 MessageBox.Show("Es wurde keine korrekte Zahl eingegeben!\nBitte wiederholen sie die Eingabe");
-                textBoxAnzeige.Text = "0";
+                textBoxAnzeige.Text = "";
             }
         }
 
@@ -422,8 +408,6 @@ namespace Taschenrechner
                 else { resultat = 1 / zahl2; }
             }
             textBoxAnzeige.Text = resultat.ToString("#,##0.###############"); // 15 Kommastellen möglich
-
-
             if (!textBoxAnzeigeIstZahl)
             {
                 if (Umwandlung())
@@ -437,14 +421,12 @@ namespace Taschenrechner
         private void buttonDel_Click(object sender, EventArgs e)
         {
             if (textBoxAnzeige.Text != "")
-            {
-                textBoxAnzeige.Text = textBoxAnzeige.Text.Substring(0, textBoxAnzeige.Text.Length - 1);
-            }
+            { textBoxAnzeige.Text = textBoxAnzeige.Text.Substring(0, textBoxAnzeige.Text.Length - 1); }
         }
 
         private void buttonCE_Click(object sender, EventArgs e)
         {
-            textBoxAnzeige.Text = "0";
+            textBoxAnzeige.Text = "";
             textBoxAnzeigeIstZahl = false;
             if (textBoxAnzeigeIstZahl1)
             { zahl1 = 0; }
@@ -455,22 +437,8 @@ namespace Taschenrechner
 
         private void buttonC_Click(object sender, EventArgs e)
         {
-            operation = ' ';
-            firstChar = true;      // wird bei der Zahleneingabe benötigt, um am Anfang der Zahl besonders zu reagieren.
-            kommaSperre = false;   // wird benötigt um zu verhindern, dass das Zeichen ',' falsch eingesetzt werden kann.  
-            exponentSperre = true; // wird benötigt um zu verhindern, dass das Zeichen 'e' falsch eingesetzt werden kann.
-            folgeAktion = false;   // wird benötigt um mit dem vorherigen Rechenergebnis weiter zu rechnen.
-            zahl1_belegt = false;
-            zahl2_belegt = false;
-            textBoxAnzeigeIstZahl = false;
-            textBoxAnzeigeIstZahl1 = true;
-            textBoxAnzeige.Text = "0";
-            resultat = 0;
-            zahl1 = 0;
-            zahl2 = 0;
-            labelFormel.Text = "";
-            operation = ' ';
             NormierungEingabe();
+            NormiereBerechnung();
         }
 
         private bool Umwandlung()
@@ -480,9 +448,33 @@ namespace Taschenrechner
             else
             {
                 MessageBox.Show("Es wurde keine korrekte Zahl eingegeben!\nBitte wiederholen sie die Eingabe");
-                textBoxAnzeige.Text = "0";
+                textBoxAnzeige.Text = "";
                 return false;   // Fehler
             }
+        }
+
+        private void NormierungEingabe()
+        {
+            firstChar = true;
+            kommaSperre = false;
+            exponentSperre = false;
+            textBoxAnzeige.Text = "";
+        }
+
+        private void NormiereBerechnung()
+        {
+            operation = ' ';
+            folgeAktion = false;
+            zahl1_belegt = false;
+            zahl2_belegt = false;
+            textBoxAnzeigeIstZahl = false;
+            textBoxAnzeigeIstZahl1 = true;
+            textBoxAnzeige.Text = "";
+            resultat = 0;
+            zahl1 = 0;
+            zahl2 = 0;
+            labelFormel.Text = "";
+            operation = ' ';
         }
     }
 

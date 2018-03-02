@@ -72,19 +72,20 @@ Regeln bei der Bedienung dieser Anwendung:
 4. Abschluss einer Berechnung
 Wird [=] eingeben, wird die Berechnung abgeschlossen und das Ergebnis wird ausgegeben.
 Mögliche Aktionen nachdem eine Berechnung mit [=] abgeschlossen wurde:
-a. Eingabe ([+], [-], [*] oder [/]), einer Zahl usw. 
+a. Eingabe: [+], [-], [*] oder [/], einer Zahl usw. 
    Folge: Es wird mit dem Ergebnis der vorher abgeschlossenen Berechnung weitergechnet.
    Erfolgt direkt nach der Berechnung die Eingabe einer Rechenart, muss noch eine neue zweite Zahl eingegeben werden.
    Wird jetzt [=] betätigt, wird mit dem vorhandenen Ergebnis, der neuen Rechenart und der neuen 2.Zahl weitergerechnet.
-b. Eingabe ([X2], [Wurzel], [%], [1/X] und [=]
+b. Eingabe [X2], [Wurzel], [+-] oder [1/X] 
    Folge: Es wird mit dem Ergebnis der vorher abgeschlossenen Berechnung weitergerechnet.
    Danach kann mit ([+], [-], [*] oder [/]), einer Zahl usw. weitergerechnet werden.
    Wird jetzt [=] betätigt, wird mit dem vorhandenen Ergebnis, der neuen Rechenart und der neuen 2.Zahl weitergerechnet.
-c. Eingabe einer Zahl, ([+], [-], [*] oder [/]), einer weiteren Zahl und [=]
-   Folge: Das alte Ergebnis wird verworfen und eine neue Berechnung gestartet. Genauso als ob [C] betätigt wurde.
+b. Eingabe [%]
+   Ein Weiterrechnen mit dem Ergebnis wird verweigert. Man bekommt eine Nachricht was zu tun ist.
+c. Eingabe einer Zahl, ([+], [-], [*] oder [/]) und einer weiteren Zahl und [=]
    Erfolgt direkt nach der Berechnung die Eingabe einer Zahl und einer Rechart, wird damit eine neue Berechnung eingeleitet.
+   Folge: Das alte Ergebnis wird verworfen und eine neue Berechnung gestartet. Genauso als ob [C] betätigt wurde.
    Es muss also noch eine 2.Zahl eingegeben werden. Das Ergebnis der letzten Berechnung spielt in diesem Fall keine Rolle mehr.
-
   
 Fazit: Nach dem ich dieses Projekt vorerst abgeschlossen habe, habe ich folgende Erkenntnisse gewonnen:
 Das Projekt war durchaus sinnvoll für mich, um den Umgang mit "Visual Studio 2017" zu üben.
