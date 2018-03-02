@@ -358,8 +358,8 @@ namespace Taschenrechner
             }
             else
             {
-                if (textBoxAnzeigeIstZahl1) { resultat = zahl1 * -1; }
-                else { resultat = zahl2 * -1; }
+                if (textBoxAnzeigeIstZahl1) { zahl1 = zahl1 * -1; resultat = zahl1; }
+                else { zahl2 = zahl2 * -1; resultat = zahl2; }
             }
             textBoxAnzeige.Text = resultat.ToString("#,##0.###############"); // 15 Kommastellen möglich
         }
