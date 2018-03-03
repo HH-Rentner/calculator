@@ -477,7 +477,18 @@ namespace Taschenrechner
         private void buttonDel_Click(object sender, EventArgs e)
         {
             if (textBoxAnzeige.Text != "")
-            { textBoxAnzeige.Text = textBoxAnzeige.Text.Substring(0, textBoxAnzeige.Text.Length - 1); }
+            {
+                textBoxAnzeige.Text = textBoxAnzeige.Text.Substring(0, textBoxAnzeige.Text.Length - 1);
+                if (!Umwandlung()) { return; }
+                textBoxAnzeige.Text = zahl.ToString("#,##0.###############");
+                if (bearbeiteZahl == 1 || folgeAktion)
+                {
+                    zahl1 = zahl;
+                    if (folgeAktion) { resultatText = textBoxAnzeige.Text; }
+                }
+                else
+                { zahl2 = zahl; }
+            }
         }
 
         private void buttonCE_Click(object sender, EventArgs e)
