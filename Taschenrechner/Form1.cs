@@ -16,7 +16,7 @@ namespace Taschenrechner
         bool kommaSperre = false;   // wird benötigt um zu verhindern, dass das Zeichen ',' falsch eingesetzt werden kann.  
         bool exponentSperre = true; // wird benötigt um zu verhindern, dass das Zeichen 'e' falsch eingesetzt werden kann.
         double zahl, zahl1, zahl2;
-        byte bearbeitezahl = 1;     // 1 = zahl1 soll ermittelt werden, 2 = zahl2 soll ermittelt werden
+        byte bearbeiteZahl = 1;     // 1 = zahl1 soll ermittelt werden, 2 = zahl2 soll ermittelt werden
         byte zahl1Zustand = 0;      // 0 = unbearbeitet, 1 = Zwischenergebnis, 2 = Endergebnis
         byte zahl2Zustand = 0;      // 0 = unbearbeitet, 1 = Zwischenergebnis, 2 = Endergebnis
         char operation = ' ';
@@ -198,7 +198,7 @@ namespace Taschenrechner
             }
             else
             {
-                if (bearbeitezahl == 1)
+                if (bearbeiteZahl == 1)
                 {
                     if (zahl1Zustand == 0)
                     {
@@ -206,10 +206,10 @@ namespace Taschenrechner
                         else { return; }
                     }
                     zahl1Zustand = 2; // Ermittlung zahl1 abgeschlossen
-                    bearbeitezahl = 2;
+                    bearbeiteZahl = 2;
                     operation = rechenArt;
                     labelFormel.Text = zahl1.ToString("#,##0.######") + " " + operation + " ";
-                    NormierungEingabe();
+                    NormierungEingabe(true);
                 }
                 else
                 {
@@ -222,7 +222,7 @@ namespace Taschenrechner
                     Berechnung(false);
                     operation = rechenArt;
                     labelFormel.Text += operation + " ";
-                    NormierungEingabe();
+                    NormierungEingabe(true);
                 }
             }
         }
@@ -277,102 +277,138 @@ namespace Taschenrechner
             zahl2 = 0;
             zahl2Zustand = 0;
             textBoxAnzeige.Text = resultat.ToString("#,##0.######");
-            NormierungEingabe();
+            NormierungEingabe(false);
         }
 
         private void buttonQuadrat_Click(object sender, EventArgs e)
         {
-            if (bearbeitezahl == 1 && zahl1Zustand == 0
-                || bearbeitezahl == 2 && zahl2Zustand == 0)
+            double ergebnis = 0;
+            if (bearbeiteZahl == 1 && zahl1Zustand == 0
+                || bearbeiteZahl == 2 && zahl2Zustand == 0)
             {
                 if (!Umwandlung()) { return; }
-                resultat = zahl * zahl;
+                ergebnis = zahl * zahl;
             }
-            if (bearbeitezahl == 1)
+            if (bearbeiteZahl == 1)
             {
                 if (zahl1Zustand == 0)
-                { zahl1 = resultat; zahl1Zustand = 1; }
+                { zahl1 = ergebnis; zahl1Zustand = 1; }
                 else
-                { zahl1 = zahl1 * zahl1; zahl1Zustand = 1; resultat = zahl1; }
+                {
+                    ergebnis = zahl1 * zahl1; zahl1Zustand = 1; zahl1 = ergebnis;
+                }
             }
             else
             {
                 if (zahl2Zustand == 0)
-                { zahl2 = resultat; zahl2Zustand = 1; }
+                { zahl2 = ergebnis; zahl2Zustand = 1; }
                 else
-                { zahl2 = zahl2 * zahl2; zahl2Zustand = 1; resultat = zahl2; }
+                { ergebnis = zahl2 * zahl2; zahl2Zustand = 1; zahl2 = ergebnis; }
             }
-            textBoxAnzeige.Text = resultat.ToString("#,##0.###############"); // 15 Kommastellen möglich
+            if (folgeAktion)
+            {
+                folgeAktion = false;
+                NormiereBerechnung(false);
+                bearbeiteZahl = 1;
+                zahl1 = ergebnis;
+                zahl1Zustand = 1;
+            }
+            textBoxAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
         }
 
         private void buttonWurzel_Click(object sender, EventArgs e)
         {
-            if (bearbeitezahl == 1 && zahl1Zustand == 0
-                || bearbeitezahl == 2 && zahl2Zustand == 0)
+            double ergebnis = 0;
+            if (bearbeiteZahl == 1 && zahl1Zustand == 0
+                || bearbeiteZahl == 2 && zahl2Zustand == 0)
             {
                 if (!Umwandlung()) { return; }
-                resultat = Math.Sqrt(zahl);
+                if (zahl < 0) { MessageBox.Show("Wurzelziehen aus negativen Zahlen nicht möglich"); return; }
+                ergebnis = Math.Sqrt(zahl);
             }
-            if (bearbeitezahl == 1)
+            if (bearbeiteZahl == 1)
             {
                 if (zahl1Zustand == 0)
-                { zahl1 = resultat; zahl1Zustand = 1; }
+                { zahl1 = ergebnis; zahl1Zustand = 1; }
                 else
-                { zahl1 = Math.Sqrt(zahl1); zahl1Zustand = 1; resultat = zahl1; }
+                {
+                    if (zahl1 < 0) { MessageBox.Show("Wurzelziehen aus negativen Zahlen nicht möglich"); return; }
+                    ergebnis = Math.Sqrt(zahl1); zahl1Zustand = 1; zahl1 = ergebnis;
+                }
             }
             else
             {
                 if (zahl2Zustand == 0)
-                { zahl2 = resultat; zahl2Zustand = 1; }
+                { zahl2 = ergebnis; zahl2Zustand = 1; }
                 else
-                { zahl2 = Math.Sqrt(zahl2); zahl2Zustand = 1; resultat = zahl2; }
+                {
+                    if (zahl2 < 0) { MessageBox.Show("Wurzelziehen aus negativen Zahlen nicht möglich"); return; }
+                    ergebnis = Math.Sqrt(zahl2); zahl2Zustand = 1; zahl2 = ergebnis;
+                }
             }
-            textBoxAnzeige.Text = resultat.ToString("#,##0.###############"); // 15 Kommastellen möglich
+            if (folgeAktion)
+            {
+                folgeAktion = false;
+                NormiereBerechnung(false);
+                bearbeiteZahl = 1;
+                zahl1 = ergebnis;
+                zahl1Zustand = 1;
+            }
+            textBoxAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
         }
 
         private void buttonPlusMinus_Click(object sender, EventArgs e)
         {
-            if (bearbeitezahl == 1 && zahl1Zustand == 0
-               || bearbeitezahl == 2 && zahl2Zustand == 0)
+            double ergebnis = 0;
+            if (bearbeiteZahl == 1 && zahl1Zustand == 0
+               || bearbeiteZahl == 2 && zahl2Zustand == 0)
             {
                 if (!Umwandlung()) { return; }
-                resultat = zahl * -1;
+                ergebnis = zahl * -1;
             }
-            if (bearbeitezahl == 1)
+            if (bearbeiteZahl == 1)
             {
                 if (zahl1Zustand == 0)
-                { zahl1 = resultat; zahl1Zustand = 1; }
+                { zahl1 = ergebnis; zahl1Zustand = 1; }
                 else
-                { zahl1 = zahl1 * -1; zahl1Zustand = 1; resultat = zahl1; }
+                { ergebnis = zahl1 * -1; zahl1Zustand = 1; zahl1 = ergebnis; }
             }
             else
             {
                 if (zahl2Zustand == 0)
-                { zahl2 = resultat; zahl2Zustand = 1; }
+                { zahl2 = ergebnis; zahl2Zustand = 1; }
                 else
-                { zahl2 = zahl2 * -1; zahl2Zustand = 1; resultat = zahl2; }
+                { ergebnis = zahl2 * -1; zahl2Zustand = 1; zahl2 = ergebnis; }
             }
-            textBoxAnzeige.Text = resultat.ToString("#,##0.###############"); // 15 Kommastellen möglich
+            if (folgeAktion)
+            {
+                folgeAktion = false;
+                NormiereBerechnung(false);
+                bearbeiteZahl = 1;
+                zahl1 = ergebnis;
+                zahl1Zustand = 1; textBoxAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
+            }
+            textBoxAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
         }
 
         private void buttonProzent_Click(object sender, EventArgs e)
         {
+            double ergebnis = 0;
             if (folgeAktion || zahl2Zustand != 0) { operation = ' '; }
             if ((Double.TryParse(textBoxAnzeige.Text, out zahl2)))
             {
-                resultat = 0;
                 switch (operation)
                 {
                     case '+':
-                        resultat = zahl1 + zahl1 / 100 * zahl2;
+                        ergebnis = zahl1 + zahl1 / 100 * zahl2;
                         labelFormel.Text = zahl1 + " + " + zahl2 + "% = ";
                         break;
                     case '-':
-                        resultat = zahl1 - zahl1 / 100 * zahl2;
+                        ergebnis = zahl1 - zahl1 / 100 * zahl2;
                         labelFormel.Text = zahl1 + " - " + zahl2 + "% = ";
                         break;
                     case '*':
-                        resultat = zahl1 / 100 * zahl2;
+                        ergebnis = zahl1 / 100 * zahl2;
                         labelFormel.Text = zahl2 + "% von " + zahl1 + " = ";
                         break;
                     default:
@@ -381,20 +417,21 @@ namespace Taschenrechner
                                         "\n2. eine Zahl eingeben" +
                                         "\n3. eine der 3 Rechenarten [+], [-] oder [*] eingeben" +
                                         "\n4. eine zweite Zahl eingeben" +
-                                        "\n5. [%] betätigen");
-                        NormierungEingabe();
+                                        "\n5. [%] betätigen" +
+                                        "\n6. Durch Eingabe einer Rechenart, kann das Ergebnis weiterverwendet werden");
+                        NormierungEingabe(true);
                         NormiereBerechnung(true);
                         break;
                 }
-                textBoxAnzeige.Text = resultat.ToString();
+                textBoxAnzeige.Text = ergebnis.ToString();
                 labelFormel.Text += textBoxAnzeige.Text;
-                bearbeitezahl = 1;
-                zahl1 = resultat;
+                bearbeiteZahl = 1;
+                zahl1 = ergebnis;
                 zahl1Zustand = 1;
                 zahl2Zustand = 0;
                 folgeAktion = true;
                 resultatText = textBoxAnzeige.Text;
-                NormierungEingabe();
+                NormierungEingabe(false);
             }
             else
             {
@@ -405,27 +442,36 @@ namespace Taschenrechner
 
         private void buttonKehrwert_Click(object sender, EventArgs e)
         {
-            if (bearbeitezahl == 1 && zahl1Zustand == 0
-              || bearbeitezahl == 2 && zahl2Zustand == 0)
+            double ergebnis = 0;
+            if (bearbeiteZahl == 1 && zahl1Zustand == 0
+              || bearbeiteZahl == 2 && zahl2Zustand == 0)
             {
                 if (!Umwandlung()) { return; }
-                resultat = 1 / zahl;
+                ergebnis = 1 / zahl;
             }
-            if (bearbeitezahl == 1)
+            if (bearbeiteZahl == 1)
             {
                 if (zahl1Zustand == 0)
-                { zahl1 = resultat; zahl1Zustand = 1; }
+                { zahl1 = ergebnis; zahl1Zustand = 1; }
                 else
-                { zahl1 = 1 / zahl1; zahl1Zustand = 1; resultat = zahl1; }
+                { ergebnis = 1 / zahl1; zahl1Zustand = 1; zahl1 = ergebnis; }
             }
             else
             {
                 if (zahl2Zustand == 0)
-                { zahl2 = resultat; zahl2Zustand = 1; }
+                { zahl2 = ergebnis; zahl2Zustand = 1; }
                 else
-                { zahl2 = 1 / zahl2; zahl2Zustand = 1; resultat = zahl2; }
+                { ergebnis = 1 / zahl2; zahl2Zustand = 1; zahl2 = ergebnis; }
             }
-            textBoxAnzeige.Text = resultat.ToString("#,##0.###############"); // 15 Kommastellen möglich
+            if (folgeAktion)
+            {
+                folgeAktion = false;
+                NormiereBerechnung(false);
+                bearbeiteZahl = 1;
+                zahl1 = ergebnis;
+                zahl1Zustand = 1; textBoxAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
+            }
+            textBoxAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
         }
 
         private void buttonDel_Click(object sender, EventArgs e)
@@ -437,16 +483,16 @@ namespace Taschenrechner
         private void buttonCE_Click(object sender, EventArgs e)
         {
             textBoxAnzeige.Text = "";
-            if (bearbeitezahl == 1)
+            if (bearbeiteZahl == 1)
             { zahl1 = 0; zahl1Zustand = 0; }
             else
             { zahl2 = 0; zahl2Zustand = 0; }
-            NormierungEingabe();
+            NormierungEingabe(true);
         }
 
         private void buttonC_Click(object sender, EventArgs e)
         {
-            NormierungEingabe();
+            NormierungEingabe(true);
             NormiereBerechnung(true);
         }
 
@@ -462,17 +508,17 @@ namespace Taschenrechner
             }
         }
 
-        private void NormierungEingabe()
+        private void NormierungEingabe(bool zusatzLoeschung)
         {
             firstChar = true;
             kommaSperre = false;
             exponentSperre = false;
-            textBoxAnzeige.Text = "";
+            if (zusatzLoeschung) { textBoxAnzeige.Text = ""; }
         }
 
         private void NormiereBerechnung(bool zusatzLoeschung)
         {
-            bearbeitezahl = 1;
+            bearbeiteZahl = 1;
             zahl1 = 0;
             zahl1Zustand = 0;
             zahl2 = 0;
