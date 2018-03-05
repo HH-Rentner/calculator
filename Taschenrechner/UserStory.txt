@@ -48,6 +48,8 @@ Regeln bei der Bedienung dieser Anwendung:
  1.5 "/" oder ":"   schließt die Zifferneingabe zur ersten Zahl ab und speichert die Rechenart.
  1.6 "*"	schließt die Zifferneingabe zur ersten Zahl ab und speichert die Rechenart.
  1.7 "="	schließt die Zifferneingabe zur zweiten Zahl ab und die Berechnung wird durchgeführt.
+ 1.8 "Backspace"	   löscht das letzte Zeichen in der Anzeige.
+ 1.9 "=" oder "Enter"  schließt die Zifferneingabe zur zweiten Zahl ab und die Berechnung wird durchgeführt.
 
 2 "Fast" alle Eingaben können per Button_click erfolgen! Die einzige Ausnahme sind "Potenz-Zahlen"(siehe 1.2).
  2.1 Mit [0]-[9] und [,] können die gewünschten Zahlen eingegeben werden.

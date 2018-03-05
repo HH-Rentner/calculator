@@ -46,6 +46,59 @@ namespace Taschenrechner
             btn9.Click += new EventHandler(Button_Click);
             btn0.Click += new EventHandler(Button_Click);
             btnKomma.Click += new EventHandler(Button_Click);
+            txtAnzeige.Focus();
+        }
+
+        void Form1_KeyPress(object sender, KeyPressEventArgs e)
+        { // Tastatureingabe
+            switch (e.KeyChar)
+            {
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                case '0':
+                case ',':
+                    Eingabe_prüfen_freigeben(e.KeyChar);
+                    break;
+                case '\b':
+                    loescheZeichen();
+                    break;
+                case 'e':
+                    if (firstChar)
+                    { MessageBox.Show("Fehlerhafte Eingabe.\nEin Exponent ohne Basiszahl ist nicht zulässig."); }
+                    else if (exponentSperre == false)
+                    {
+                        exponentSperre = true;
+                        txtAnzeige.Text += e.KeyChar;
+                    }
+                    else { MessageBox.Show("Fehlerhafte Eingabe.\nDer Exponent kann nur einmal vergeben werden."); }
+                    break;
+                case '+':
+                case '-':
+                case '*':
+                case '/':
+                    VerarbeiteEingabe(e.KeyChar);
+                    break;
+                case ':':
+                    VerarbeiteEingabe('/');
+                    break;
+                case '=':
+                case '\r':
+                    Berechnung(true);
+                    break;
+                default:
+                    MessageBox.Show("Es wurde ein falsches Zeichen eingeben\noder eine falsche Taste betätigt.");
+                    break;
+            }
+            e.Handled = true; // verhindert das das Zeichen noch einmal ausgegeben wird. genaue Arbeitsweise muss noch untersucht werden.
+            txtAnzeige.Focus();
+            txtAnzeige.Select(txtAnzeige.Text.Length, 0);
         }
 
         void Button_Click(object sender, EventArgs e)
@@ -100,52 +153,8 @@ namespace Taschenrechner
             catch (Exception ex)  // gehört zu "try" -  muss noch untersucht werden.
             { MessageBox.Show("Uerwarteter Fehler ist aufgetreten. Details: " + ex.Message); }
             Eingabe_prüfen_freigeben(eingabeChar);
-        }
-
-        void Form1_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            switch (e.KeyChar)
-            {
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                case '8':
-                case '9':
-                case '0':
-                case ',':
-                    Eingabe_prüfen_freigeben(e.KeyChar);
-                    break;
-                case 'e':
-                    if (firstChar)
-                    { MessageBox.Show("Fehlerhafte Eingabe.\nEin Exponent ohne Basiszahl ist nicht zulässig."); }
-                    else if (exponentSperre == false)
-                    {
-                        exponentSperre = true;
-                        txtAnzeige.Text += e.KeyChar;
-                    }
-                    else { MessageBox.Show("Fehlerhafte Eingabe.\nDer Exponent kann nur einmal vergeben werden."); }
-                    break;
-                case '+':
-                case '-':
-                case '*':
-                case '/':
-                    VerarbeiteEingabe(e.KeyChar);
-                    break;
-                case ':':
-                    VerarbeiteEingabe('/');
-                    break;
-                case '=':
-                    Berechnung(true);
-                    break;
-                default:
-                    MessageBox.Show("Es wurde ein falsches Zeichen eingeben\noder eine falsche Taste betätigt.");
-                    break;
-            }
-            e.Handled = true; // verhindert das das Zeichen noch einmal ausgegeben wird. genaue Arbeitsweise muss noch untersucht werden.
+            txtAnzeige.Focus();
+            txtAnzeige.Select(txtAnzeige.Text.Length, 0);
         }
 
         public void Eingabe_prüfen_freigeben(char zeichen)
@@ -189,6 +198,8 @@ namespace Taschenrechner
 
         private void VerarbeiteEingabe(char rechenArt)
         {
+            txtAnzeige.Focus();
+            txtAnzeige.Select(txtAnzeige.Text.Length, 0);
             if (folgeAktion)
             {
                 folgeAktion = false;
@@ -202,7 +213,7 @@ namespace Taschenrechner
                 {
                     if (zahl1Zustand == 0)
                     {
-                        if (Umwandlung()) { zahl1 = zahl; }
+                        if (Umwandlung("VerarbeiteEingabe")) { zahl1 = zahl; }
                         else { return; }
                     }
                     zahl1Zustand = 2; // Ermittlung zahl1 abgeschlossen
@@ -215,7 +226,7 @@ namespace Taschenrechner
                 {
                     if (zahl2Zustand == 0)
                     {
-                        if (Umwandlung()) { zahl2 = zahl; }
+                        if (Umwandlung("VerarbeiteEingabe")) { zahl2 = zahl; }
                         else { return; }
                     }
                     zahl2Zustand = 2;
@@ -228,7 +239,7 @@ namespace Taschenrechner
         }
 
         private void btnGleich_Click(object sender, EventArgs e)
-        { Berechnung(true); }
+        { Berechnung(true); txtAnzeige.Focus(); txtAnzeige.Select(txtAnzeige.Text.Length, 0); }
 
         private void Berechnung(bool buttonGleich)
         {
@@ -236,7 +247,7 @@ namespace Taschenrechner
             if (folgeAktion) { return; }
             if (zahl2Zustand == 0)
             {
-                if (Umwandlung())
+                if (Umwandlung("Berechnung"))
                 {
                     zahl2 = zahl;
                     zahl2Zustand = 2;
@@ -282,11 +293,12 @@ namespace Taschenrechner
 
         private void btnQuadrat_Click(object sender, EventArgs e)
         {
+            txtAnzeige.Focus();
             double ergebnis = 0;
             if (bearbeiteZahl == 1 && zahl1Zustand == 0
                 || bearbeiteZahl == 2 && zahl2Zustand == 0)
             {
-                if (!Umwandlung()) { return; }
+                if (!Umwandlung("btnQuadrat_Click")) { return; }
                 ergebnis = zahl * zahl;
             }
             if (bearbeiteZahl == 1)
@@ -314,15 +326,17 @@ namespace Taschenrechner
                 zahl1Zustand = 1;
             }
             txtAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
+            txtAnzeige.Select(txtAnzeige.Text.Length, 0);
         }
 
         private void btnWurzel_Click(object sender, EventArgs e)
         {
+            txtAnzeige.Focus();
             double ergebnis = 0;
             if (bearbeiteZahl == 1 && zahl1Zustand == 0
                 || bearbeiteZahl == 2 && zahl2Zustand == 0)
             {
-                if (!Umwandlung()) { return; }
+                if (!Umwandlung("btnWurzel_Click")) { return; }
                 if (zahl < 0) { MessageBox.Show("Wurzelziehen aus negativen Zahlen nicht möglich"); return; }
                 ergebnis = Math.Sqrt(zahl);
             }
@@ -355,15 +369,17 @@ namespace Taschenrechner
                 zahl1Zustand = 1;
             }
             txtAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
+            txtAnzeige.Select(txtAnzeige.Text.Length, 0);
         }
 
         private void btnPlusMinus_Click(object sender, EventArgs e)
         {
+            txtAnzeige.Focus();
             double ergebnis = 0;
             if (bearbeiteZahl == 1 && zahl1Zustand == 0
                || bearbeiteZahl == 2 && zahl2Zustand == 0)
             {
-                if (!Umwandlung()) { return; }
+                if (!Umwandlung("btnPlusMinus_Click")) { return; }
                 ergebnis = zahl * -1;
             }
             if (bearbeiteZahl == 1)
@@ -389,10 +405,12 @@ namespace Taschenrechner
                 zahl1Zustand = 1; txtAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
             }
             txtAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
+            txtAnzeige.Select(txtAnzeige.Text.Length, 0);
         }
 
         private void btnProzent_Click(object sender, EventArgs e)
         {
+            txtAnzeige.Focus();
             double ergebnis = 0;
             if (folgeAktion || zahl2Zustand != 0) { operation = ' '; }
             if ((Double.TryParse(txtAnzeige.Text, out zahl2)))
@@ -419,9 +437,9 @@ namespace Taschenrechner
                                         "\n4. eine zweite Zahl eingeben" +
                                         "\n5. [%] betätigen" +
                                         "\n6. Durch Eingabe einer Rechenart, kann das Ergebnis weiterverwendet werden");
-                        NormierungEingabe(true);
-                        NormiereBerechnung(true);
-                        break;
+                        //NormierungEingabe(true);
+                        //NormiereBerechnung(true);
+                        return;
                 }
                 txtAnzeige.Text = ergebnis.ToString();
                 lblFormel.Text += txtAnzeige.Text;
@@ -438,15 +456,17 @@ namespace Taschenrechner
                 MessageBox.Show("Es wurde keine korrekte Zahl eingegeben!\nBitte wiederholen sie die Eingabe");
                 txtAnzeige.Text = "";
             }
+            txtAnzeige.Select(txtAnzeige.Text.Length, 0);
         }
 
         private void btnKehrwert_Click(object sender, EventArgs e)
         {
+            txtAnzeige.Focus();
             double ergebnis = 0;
             if (bearbeiteZahl == 1 && zahl1Zustand == 0
               || bearbeiteZahl == 2 && zahl2Zustand == 0)
             {
-                if (!Umwandlung()) { return; }
+                if (!Umwandlung("btnKehrwert_Click")) { return; }
                 ergebnis = 1 / zahl;
             }
             if (bearbeiteZahl == 1)
@@ -472,20 +492,31 @@ namespace Taschenrechner
                 zahl1Zustand = 1; txtAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
             }
             txtAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
+            txtAnzeige.Select(txtAnzeige.Text.Length, 0);
         }
 
         private void btnDel_Click(object sender, EventArgs e)
+        { loescheZeichen(); }
+
+        private void loescheZeichen()
         {
+            txtAnzeige.Focus();
             if (txtAnzeige.Text != "")
             {
                 txtAnzeige.Text = txtAnzeige.Text.Substring(0, txtAnzeige.Text.Length - 1);
-                if (!Umwandlung()) { return; }
-                txtAnzeige.Text = zahl.ToString("#,##0.###############");
-                if (bearbeiteZahl == 1 || folgeAktion)
+                if (txtAnzeige.Text != "")
                 {
-                    zahl1 = zahl;
-                    if (folgeAktion) { resultatText = txtAnzeige.Text; }
+                    if (!Umwandlung("loescheZeichen")) { return; }
+                    txtAnzeige.Text = zahl.ToString("#,##0.###############");
+                    txtAnzeige.Select(txtAnzeige.Text.Length, 0);
                 }
+                else
+                {
+                    zahl = 0;
+                    txtAnzeige.Text = ("");
+                }
+                if (bearbeiteZahl == 1 || folgeAktion)
+                { zahl1 = zahl; if (folgeAktion) { resultatText = txtAnzeige.Text; } }
                 else
                 { zahl2 = zahl; }
             }
@@ -493,27 +524,38 @@ namespace Taschenrechner
 
         private void btnCE_Click(object sender, EventArgs e)
         {
+            txtAnzeige.Focus();
             txtAnzeige.Text = "";
             if (bearbeiteZahl == 1)
             { zahl1 = 0; zahl1Zustand = 0; }
             else
-            { zahl2 = 0; zahl2Zustand = 0; }
+            {
+                zahl2 = 0; zahl2Zustand = 0;
+                if (folgeAktion)
+                {
+                    bearbeiteZahl = 1;
+                    zahl1Zustand = 0;
+                    folgeAktion = false;
+                }
+            }
             NormierungEingabe(true);
         }
 
         private void buttonC_Click(object sender, EventArgs e)
         {
+            txtAnzeige.Focus();
             NormierungEingabe(true);
             NormiereBerechnung(true);
         }
 
-        private bool Umwandlung()
+        private bool Umwandlung(string ursprung)
         {
             if ((Double.TryParse(txtAnzeige.Text, out zahl)))
             { return true; }  // kein Fehler
             else
             {
-                MessageBox.Show("Es wurde keine korrekte Zahl eingegeben!\nBitte wiederholen sie die Eingabe");
+
+                MessageBox.Show("Methode = " + ursprung + "\n" + "Es wurde keine korrekte Zahl eingegeben!\nBitte wiederholen sie die Eingabe");
                 txtAnzeige.Text = "";
                 return false;   // Fehler
             }
