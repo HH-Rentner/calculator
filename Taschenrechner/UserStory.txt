@@ -1,12 +1,11 @@
 ﻿Hamburg, den 01.03.2018 (calculator GitHub Version 2)
-Dieser Taschenrechner basiert auf dem Quellcode von "A.m.a.L Hashim".
+Bei der Erstellung einer "C# winforms-app" nutzte ich den Quellcode von "A.m.a.L Hashim".
 Er hat unter https://code.msdn.microsoft.com/windowsdesktop/Simple-Calculator-54ec8e4a einen "simple calculator" zur Verfügung gestellt.
-Dies war mir eine große Hilfe beim Einstieg in "Visual Studio Win-Forms-Anwendungen".
+Dies war mir eine große Hilfe um einen Einstieg zu finden.
 
 Zu meinen Quellcode ist aus meiner Sicht einiges anzumerken:
 Dieser Quellcode diente der eigenen Schulung in "Visual Studio Win-Forms-Anwendungen".
 Er ist für Anfänger wie mich gedacht. Also bei der Nutzung bitte immer bedenken, dass bestimmt vieles nicht optimal gelöst wurde.
-Besonders freuen würde ich mich, wenn erfahrene Programmierer mir einige Tipps geben würden.
 Als ich mich mit der Erstellung beschäftigte, hatte ich nur rudimentäre Kenntnisse von "Visual Studio 2017". 
 Dies hat sich zurzeit noch nicht wesentlich geändert. Mir fehlen immer noch umfassende Kenntnisse der verschiedenen Methoden.
 Deshalb sind mit Sicherheit viele meiner Lösungen anders bzw. eleganter zu lösen.
@@ -36,7 +35,7 @@ Ein Problem könnte sein, dass ich keine Funktion gefunden habe, in der Wurzelzi
 
 Regeln bei der Bedienung dieser Anwendung:
 
-1. Alternativ zur "Click-Eingabe" kann teilweise auch eine Eingabe per Tastatur erfolgen. 
+1. Tastatureingabe: Alternativ zur "Click-Eingabe" kann teilweise auch eine Eingabe per Tastatur erfolgen. 
   Folgende Möglichkeiten bestehen zurzeit:
  1.1 Ziffern "0-9"
  1.2 Eingabe eine Zahl in Exponenten-Darstellung. Dabei ist folgendes zu beachten:
@@ -51,25 +50,24 @@ Regeln bei der Bedienung dieser Anwendung:
  1.8 "Backspace"	   löscht das letzte Zeichen in der Anzeige.
  1.9 "=" oder "Enter"  schließt die Zifferneingabe zur zweiten Zahl ab und die Berechnung wird durchgeführt.
 
-2 "Fast" alle Eingaben können per Button_click erfolgen! Die einzige Ausnahme sind "Potenz-Zahlen"(siehe 1.2).
+2 Click-Eingabe: Fast alle Eingaben können per Button_click erfolgen! Die einzige Ausnahme sind "Potenz-Zahlen"(siehe 1.2).
  2.1 Mit [0]-[9] und [,] können die gewünschten Zahlen eingegeben werden.
- 2.2 [+-] Mit diesem "Click" kann das Vorzeichen nach Eingabe der gewünschten Zahl erfolgen. 
- 2.3 [+]           schließt die Zifferneingabe zur ersten Zahl ab und speichert die Rechenart.
- 2.4 [-]           schließt die Zifferneingabe zur ersten Zahl ab und speichert die Rechenart.
- 2.5 [/]           schließt die Zifferneingabe zur ersten Zahl ab und speichert die Rechenart.
- 2.6 [*]           schließt die Zifferneingabe zur ersten Zahl ab und speichert die Rechenart.
- 2.7 [=]           schließt die Zifferneingabe zur zweiten Zahl ab und die Berechnung wird durchgeführt.
- 2.8 [X2] kann jederzeit angewendet werden. Die weitere Berechnung wird davon nicht beeinflußt.
+ 2.2 [+-]	ändert Vorzeichen nach das Vorzeichen der Eingabe. 
+ 2.3 [+]	schließt die Zifferneingabe zur ersten Zahl ab und speichert die Rechenart.
+ 2.4 [-]	schließt die Zifferneingabe zur ersten Zahl ab und speichert die Rechenart.
+ 2.5 [/]	schließt die Zifferneingabe zur ersten Zahl ab und speichert die Rechenart.
+ 2.6 [*]	schließt die Zifferneingabe zur ersten Zahl ab und speichert die Rechenart.
+ 2.7 [=]	schließt die Zifferneingabe zur zweiten Zahl ab und die Berechnung wird durchgeführt.
+ 2.8 [X2]	kann jederzeit angewendet werden. Die weitere Berechnung wird davon nicht beeinflußt.
  2.9 [Wurzel] kann jederzeit angewendet werden. Die weitere Berechnung wird davon nicht beeinflußt.
- 2.10 [+-] kann jederzeit angewendet werden. Die weitere Berechnung wird davon nicht beeinflußt.
+ 2.10 [+-]	kann jederzeit angewendet werden. Die weitere Berechnung wird davon nicht beeinflußt.
  2.11 [1/X] kann jederzeit angewendet werden. Die weitere Berechnung wird davon nicht beeinflußt.
- 2.12 [%] Zuerst die 1.Zahl eingeben. Danach die Rechenart und die 2.Zahl und die Prozentzuordnung.
+ 2.12 [%]	Zuerst die 1.Zahl eingeben. Danach die Rechenart und die 2.Zahl und die Prozentzuordnung.
           Beispiel 1: [1][0][0][*][2][%] ergibt 2.
           Beispiel 2: [1][0][0][+][2][%] ergibt 102.
           Beispiel 3: [1][0][0][-][2][%] ergibt 98.
 	      Mit dem Ergebnis kann weitergerechnet werden.
-		   2.8 [X2] kann jederzeit angewendet werden. Die weitere Berechnung wird davon nicht beeinflußt.
- 2.13 [->] löscht das zuletzt eingegebene Zeichen.
+ 2.13 [->] löscht das letzte Zeichen in der Anzeige.
  2.14 [CE] löscht die Eingabe der aktuellen Zahl. Es kann mit den vorherigen Eingaben weitergerechnet werden.
  2.15 [C] löscht alle Eingaben. Normiert den Recher.
  
@@ -80,7 +78,7 @@ Regeln bei der Bedienung dieser Anwendung:
    Dazu müsste die Eingabe gespeichert werden, damit sie analysiert werden kann. 
    Erst dann könnte der Rechenvorgang entsprechend der Prioritäten durchgeführt werden.
 
-4. Abschluss einer Berechnung mit[=]
+4. Abschluss einer Berechnung mit [=] und mögliche Folgeberechnungen:
 Wird [=] eingeben, wird die Berechnung abgeschlossen und das Ergebnis wird ausgegeben.
 Mögliche Aktionen nachdem eine Berechnung mit [=] abgeschlossen wurde:
 a. Eingabe ([+], [-], [*] oder [/]) und einer Zahl usw. 
@@ -92,7 +90,7 @@ b. Eingabe [X2], [Wurzel], [+-] oder [1/X]
    Wird jetzt [=] betätigt, wird mit dem vorhandenen Ergebnis, der neuen Rechenart und der neuen 2.Zahl weitergerechnet.
 b. Eingabe [%]
    Ein Weiterrechnen mit dem Ergebnis wird verweigert. Man bekommt eine Nachricht was zu tun ist.
-c. Eingabe einer Zahl, ([+], [-], [*] oder [/]), einer weiteren Zahl und [=]
+c. Eingabe einer Zahl, ([+], [-], [*] oder [/]) und einer weiteren Zahl usw. (siehe auch unter 3.)
    Erfolgt direkt nach der Berechnung die Eingabe einer Zahl und einer Rechart, wird damit eine neue Berechnung eingeleitet.
    Folge: Das alte Ergebnis wird verworfen und eine neue Berechnung gestartet. Genauso als ob [C] betätigt wurde.
    Es muss also noch eine 2.Zahl eingegeben werden. Das Ergebnis der letzten Berechnung spielt in diesem Fall keine Rolle mehr.
@@ -107,4 +105,3 @@ Wahrscheinlich sind auch noch diverse "Fehler" oder "Unvollständigkeiten" vorha
 Falls ihr was entdeckt, benachrichtigt mich bitte!
 
 Viel Spaß
-
