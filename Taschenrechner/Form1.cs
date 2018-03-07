@@ -15,7 +15,7 @@ namespace Taschenrechner
         bool firstChar = true;      // wird bei der Zahleneingabe benötigt, um am Anfang der Zahl besonders zu reagieren.
         bool kommaSperre = false;   // wird benötigt um zu verhindern, dass das Zeichen ',' falsch eingesetzt werden kann.  
         bool exponentSperre = true; // wird benötigt um zu verhindern, dass das Zeichen 'e' falsch eingesetzt werden kann.
-        double zahl, zahl1, zahl2;
+        double zahl, zahl1, zahl2, memory;
         byte bearbeiteZahl = 1;     // 1 = zahl1 soll ermittelt werden, 2 = zahl2 soll ermittelt werden
         byte zahl1Zustand = 0;      // 0 = unbearbeitet, 1 = Zwischenergebnis, 2 = Endergebnis
         byte zahl2Zustand = 0;      // 0 = unbearbeitet, 1 = Zwischenergebnis, 2 = Endergebnis
@@ -317,14 +317,7 @@ namespace Taschenrechner
                 else
                 { ergebnis = zahl2 * zahl2; zahl2Zustand = 1; zahl2 = ergebnis; }
             }
-            if (folgeAktion)
-            {
-                folgeAktion = false;
-                NormiereBerechnung(false);
-                bearbeiteZahl = 1;
-                zahl1 = ergebnis;
-                zahl1Zustand = 1;
-            }
+            if (folgeAktion) { AenderZahl1(ergebnis); }
             txtAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
             txtAnzeige.Select(txtAnzeige.Text.Length, 0);
         }
@@ -360,15 +353,8 @@ namespace Taschenrechner
                     ergebnis = Math.Sqrt(zahl2); zahl2Zustand = 1; zahl2 = ergebnis;
                 }
             }
-            if (folgeAktion)
-            {
-                folgeAktion = false;
-                NormiereBerechnung(false);
-                bearbeiteZahl = 1;
-                zahl1 = ergebnis;
-                zahl1Zustand = 1;
-            }
-            txtAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
+            if (folgeAktion) { AenderZahl1(ergebnis); }
+           txtAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
             txtAnzeige.Select(txtAnzeige.Text.Length, 0);
         }
 
@@ -396,15 +382,8 @@ namespace Taschenrechner
                 else
                 { ergebnis = zahl2 * -1; zahl2Zustand = 1; zahl2 = ergebnis; }
             }
-            if (folgeAktion)
-            {
-                folgeAktion = false;
-                NormiereBerechnung(false);
-                bearbeiteZahl = 1;
-                zahl1 = ergebnis;
-                zahl1Zustand = 1; txtAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
-            }
-            txtAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
+            if (folgeAktion) { AenderZahl1(ergebnis); }
+           txtAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
             txtAnzeige.Select(txtAnzeige.Text.Length, 0);
         }
 
@@ -483,14 +462,7 @@ namespace Taschenrechner
                 else
                 { ergebnis = 1 / zahl2; zahl2Zustand = 1; zahl2 = ergebnis; }
             }
-            if (folgeAktion)
-            {
-                folgeAktion = false;
-                NormiereBerechnung(false);
-                bearbeiteZahl = 1;
-                zahl1 = ergebnis;
-                zahl1Zustand = 1; txtAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
-            }
+            if (folgeAktion) { AenderZahl1(ergebnis); }
             txtAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
             txtAnzeige.Select(txtAnzeige.Text.Length, 0);
         }
@@ -561,6 +533,15 @@ namespace Taschenrechner
             }
         }
 
+        private void AenderZahl1(double wert)
+        {
+            folgeAktion = false;
+            NormiereBerechnung(false);
+            bearbeiteZahl = 1;
+            zahl1 = wert;
+            zahl1Zustand = 1; txtAnzeige.Text = wert.ToString("#,##0.###############"); // 15 Kommastellen möglich
+        }
+
         private void NormierungEingabe(bool zusatzLoeschung)
         {
             firstChar = true;
@@ -585,6 +566,78 @@ namespace Taschenrechner
                 operation = ' ';
             }
         }
-    }
 
+        private void btnMC_Click(object sender, EventArgs e)
+        {
+            // Wechsle die Farbe einige "M"-Buttons
+            memory = 0;
+            lblMemory.Text = "0";
+        }
+
+        private void btnMR_Click(object sender, EventArgs e)
+        {
+            txtAnzeige.Text = memory.ToString();
+            if (bearbeiteZahl == 1)
+            { zahl1 = memory; zahl1Zustand = 1; }
+            else
+            { zahl2 = memory; zahl2Zustand = 1; }
+            if (folgeAktion) { AenderZahl1(memory); }
+        }
+
+        private void btnMinus_Click(object sender, EventArgs e)
+        {
+            // Wechsle die Farbe einige "M"-Buttons
+            if (bearbeiteZahl == 1 && zahl1Zustand == 0
+               || bearbeiteZahl == 2 && zahl2Zustand == 0)
+            {
+                if (!Umwandlung(" btnMminus_Click")) { return; }
+                memory = memory - zahl;
+            }
+            else
+            if (bearbeiteZahl == 1)
+            { memory = memory - zahl1; }
+            else
+            { memory = memory - zahl2; }
+            lblMemory.Text = memory.ToString();
+            txtAnzeige.Focus();
+        }
+
+        private void btnPlus_Click(object sender, EventArgs e)
+        {
+            // Wechsle die Farbe einige "M"-Buttons
+            if (bearbeiteZahl == 1 && zahl1Zustand == 0
+               || bearbeiteZahl == 2 && zahl2Zustand == 0)
+            {
+                if (!Umwandlung("btnMplus_Click")) { return; }
+                memory = memory + zahl;
+            }
+            else
+            if (bearbeiteZahl == 1)
+            { memory = memory + zahl1; }
+            else
+            { memory = memory + zahl2; }
+            lblMemory.Text = memory.ToString();
+            txtAnzeige.Focus();
+        }
+
+        private void btnMS_Click(object sender, EventArgs e)
+        {
+            // Wechsle die Farbe einige "M"-Buttons
+            if (bearbeiteZahl == 1 && zahl1Zustand == 0
+               || bearbeiteZahl == 2 && zahl2Zustand == 0)
+            {
+                if (!Umwandlung("btnMS_Click")) { return; }
+                memory = zahl;
+            }
+            else
+            if (bearbeiteZahl == 1)
+            { memory = zahl1; }
+            else
+            { memory = zahl2; }
+            txtAnzeige.Focus();
+            lblMemory.Text = memory.ToString();
+
+        }
+    }
 }
+
