@@ -219,7 +219,7 @@ namespace Taschenrechner
                     zahl1Zustand = 2; // Ermittlung zahl1 abgeschlossen
                     bearbeiteZahl = 2;
                     operation = rechenArt;
-                    lblFormel.Text = zahl1.ToString("#,##0.######") + " " + operation + " ";
+                    lblFormel.Text = zahl1.ToString("#,##0.#####") + " " + operation + " ";
                     NormierungEingabe(true);
                 }
                 else
@@ -279,7 +279,7 @@ namespace Taschenrechner
             if (buttonGleich)
             {
                 folgeAktion = true; // Weitere Berechnung auf Grundlage des alten Ergebnisses wird ermöglicht.
-                resultatText = resultat.ToString("#,##0.######");
+                resultatText = resultat.ToString("#,##0.#####");
                 lblFormel.Text += zahl2Text + " = " + resultatText;
             }
             else { lblFormel.Text += zahl2Text + " "; }
@@ -287,7 +287,7 @@ namespace Taschenrechner
             zahl1Zustand = 2;
             zahl2 = 0;
             zahl2Zustand = 0;
-            txtAnzeige.Text = resultat.ToString("#,##0.######");
+            txtAnzeige.Text = resultat.ToString("#,##0.#####");
             NormierungEingabe(false);
         }
 
@@ -318,7 +318,7 @@ namespace Taschenrechner
                 { ergebnis = zahl2 * zahl2; zahl2Zustand = 1; zahl2 = ergebnis; }
             }
             if (folgeAktion) { AenderZahl1(ergebnis); }
-            txtAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
+            txtAnzeige.Text = ergebnis.ToString("#,##0.#####"); // 5 Kommastellen möglich
             txtAnzeige.Select(txtAnzeige.Text.Length, 0);
         }
 
@@ -354,7 +354,7 @@ namespace Taschenrechner
                 }
             }
             if (folgeAktion) { AenderZahl1(ergebnis); }
-           txtAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
+           txtAnzeige.Text = ergebnis.ToString("#,##0.#####"); // 5 Kommastellen möglich
             txtAnzeige.Select(txtAnzeige.Text.Length, 0);
         }
 
@@ -383,7 +383,7 @@ namespace Taschenrechner
                 { ergebnis = zahl2 * -1; zahl2Zustand = 1; zahl2 = ergebnis; }
             }
             if (folgeAktion) { AenderZahl1(ergebnis); }
-           txtAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
+           txtAnzeige.Text = ergebnis.ToString("#,##0.#####"); // 5 Kommastellen möglich
             txtAnzeige.Select(txtAnzeige.Text.Length, 0);
         }
 
@@ -463,7 +463,7 @@ namespace Taschenrechner
                 { ergebnis = 1 / zahl2; zahl2Zustand = 1; zahl2 = ergebnis; }
             }
             if (folgeAktion) { AenderZahl1(ergebnis); }
-            txtAnzeige.Text = ergebnis.ToString("#,##0.###############"); // 15 Kommastellen möglich
+            txtAnzeige.Text = ergebnis.ToString("#,##0.#####"); // 5 Kommastellen möglich
             txtAnzeige.Select(txtAnzeige.Text.Length, 0);
         }
 
@@ -479,7 +479,7 @@ namespace Taschenrechner
                 if (txtAnzeige.Text != "")
                 {
                     if (!Umwandlung("loescheZeichen")) { return; }
-                    txtAnzeige.Text = zahl.ToString("#,##0.###############");
+                    txtAnzeige.Text = zahl.ToString("#,##0.#####");
                     txtAnzeige.Select(txtAnzeige.Text.Length, 0);
                 }
                 else
@@ -539,7 +539,7 @@ namespace Taschenrechner
             NormiereBerechnung(false);
             bearbeiteZahl = 1;
             zahl1 = wert;
-            zahl1Zustand = 1; txtAnzeige.Text = wert.ToString("#,##0.###############"); // 15 Kommastellen möglich
+            zahl1Zustand = 1; txtAnzeige.Text = wert.ToString("#,##0.#####"); // 5 Kommastellen möglich
         }
 
         private void NormierungEingabe(bool zusatzLoeschung)
